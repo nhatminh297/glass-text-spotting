@@ -72,7 +72,7 @@ MODEL:
   BACKBONE:
     FREEZE_AT: 0
     NAME: build_resnet_fpn_backbone
-  DEVICE: cuda
+  DEVICE: cpu
   FILTERED_RPN:
     IGNORE_TEXT:
     - '###'
