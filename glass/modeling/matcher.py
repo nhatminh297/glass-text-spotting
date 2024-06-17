@@ -24,7 +24,7 @@ class Matcher(D2Matcher):
         # @Tsiper - Batch based implementation
         num_gt_indices = highest_quality_foreach_gt.shape[0]
         split_ind = 50
-        num_of_batches = np.ceil(num_gt_indices / split_ind).astype(np.int)
+        num_of_batches = np.ceil(num_gt_indices / split_ind).astype(int)
         for ind in range(num_of_batches):
             ind_start = int(ind * split_ind)
             ind_end = min(int((ind + 1) * split_ind), num_gt_indices)
