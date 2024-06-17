@@ -91,7 +91,7 @@ def add_e2e_config(cfg):
     _C.MODEL.RECOGNIZER_ON = False
     _C.MODEL.ROI_MASK_HEAD.LABELS_TYPE = "attention"
     _C.MODEL.ROI_MASK_HEAD.MAX_WORD_LENGTH = 50
-    _C.MODEL.ROI_MASK_HEAD.CHARACTER_SET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
+    _C.MODEL.ROI_MASK_HEAD.CHARACTER_SET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
     _C.MODEL.ROI_MASK_HEAD.UNK_SYMBOL_PRED = False
     _C.MODEL.ROI_MASK_HEAD.IGNORE_EMPTY_TEXT = True
     _C.MODEL.ROI_MASK_HEAD.POOLER_RESOLUTION_WIDTH = 32
@@ -135,7 +135,7 @@ def add_e2e_config(cfg):
 
     _C.MODEL.ROI_RECOGNIZER_HEAD.LABELS_TYPE = "attention"
     _C.MODEL.ROI_RECOGNIZER_HEAD.MAX_WORD_LENGTH = 50
-    _C.MODEL.ROI_RECOGNIZER_HEAD.CHARACTER_SET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
+    _C.MODEL.ROI_RECOGNIZER_HEAD.CHARACTER_SET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
     _C.MODEL.ROI_RECOGNIZER_HEAD.UNK_SYMBOL_PRED = False
     _C.MODEL.ROI_RECOGNIZER_HEAD.IGNORE_EMPTY_TEXT = True
     _C.MODEL.ROI_RECOGNIZER_HEAD.POOLER_RESOLUTION_WIDTH = 32
