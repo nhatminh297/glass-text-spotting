@@ -150,7 +150,7 @@ def add_e2e_config(cfg):
 
     _C.MODEL.ROI_RECOGNIZER_HEAD.POOLER_TYPE = "ROIAlignRotated"
     _C.MODEL.ROI_RECOGNIZER_HEAD.NORM = "BN"
-    _C.MODEL.ROI_RECOGNIZER_HEAD.CHARACTER_SET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
+    _C.MODEL.ROI_RECOGNIZER_HEAD.CHARACTER_SET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
     _C.MODEL.ROI_RECOGNIZER_HEAD.RECOGNIZER_HEAD.BACKBONE = CN()
     _C.MODEL.ROI_RECOGNIZER_HEAD.RECOGNIZER_HEAD.BACKBONE.NAME = "CNN_V1_2"
     _C.MODEL.ROI_RECOGNIZER_HEAD.POOLER_SAMPLING_RATIO = 0
