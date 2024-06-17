@@ -10,7 +10,7 @@ from detectron2.data import detection_utils as utils
 from detectron2.data import transforms as T
 from detectron2.structures import PolygonMasks, BoxMode
 
-from .text_encoder import TextEncoder
+from ..modeling.recognition.text_encoder import TextEncoder
 from ..utils.common_utils import rgb2grey
 
 
@@ -32,27 +32,33 @@ class DatasetMapper:
         self.rotated_boxes_on = cfg.MODEL.ROTATED_BOXES_ON
 
         if cfg.INPUT.CROP.ENABLED and is_train:
-            self.crop_gen = T.RandomCrop(cfg.INPUT.CROP.TYPE,
-                                         cfg.INPUT.CROP.SIZE)  # TODO (amir): add RandomCropWithInstace here
+            self.crop_gen = T.RandomCrop(
+                cfg.INPUT.CROP.TYPE, cfg.INPUT.CROP.SIZE
+            )  # TODO (amir): add RandomCropWithInstace here
             logger.info("CropGen used in training: " + str(self.crop_gen))
             self.crop_probability = cfg.INPUT.CROP.PROBABILITY
             self.crop_size = cfg.INPUT.CROP.SIZE[0]
         else:
             self.crop_gen = None
             self.crop_probability = 0
-            self.crop_size = 1.
+            self.crop_size = 1.0
 
         self.tfm_gens = utils.build_transform_gen(cfg, is_train)
 
         # Adding random rotation
         if cfg.INPUT.ROTATION.ENABLED and is_train:
-            self.tfm_gens = [T.RandomRotation(angle=cfg.INPUT.ROTATION.ANGLES, sample_style='choice')] \
-                            + self.tfm_gens
-            logger.info("Added RotationTransform for Orientation: " + str(self.tfm_gens))
+            self.tfm_gens = [
+                T.RandomRotation(angle=cfg.INPUT.ROTATION.ANGLES, sample_style="choice")
+            ] + self.tfm_gens
+            logger.info(
+                "Added RotationTransform for Orientation: " + str(self.tfm_gens)
+            )
 
         if self.keypoint_on and is_train:
             # Flip only makes sense in training
-            self.keypoint_hflip_indices = utils.create_keypoint_hflip_indices(cfg.DATASETS.TRAIN)
+            self.keypoint_hflip_indices = utils.create_keypoint_hflip_indices(
+                cfg.DATASETS.TRAIN
+            )
         else:
             self.keypoint_hflip_indices = None
 
@@ -80,7 +86,9 @@ class DatasetMapper:
         dataset_dict = _clone_dict(dataset_dict)  # it will be modified by code below
         image = self._read_and_verify_image(dataset_dict)
 
-        crop_flag = (self.crop_gen is not None) and (self.crop_probability > np.random.random())
+        crop_flag = (self.crop_gen is not None) and (
+            self.crop_probability > np.random.random()
+        )
         if "annotations" not in dataset_dict:
             image, transforms = T.apply_transform_gens(
                 ([self.crop_gen] if crop_flag else []) + self.tfm_gens, image
@@ -107,7 +115,9 @@ class DatasetMapper:
         # PyTorch's dataloader is efficient on torch.Tensor due to shared-memory,
         # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
-        dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
+        dataset_dict["image"] = torch.as_tensor(
+            np.ascontiguousarray(image.transpose(2, 0, 1))
+        )
 
         if "annotations" in dataset_dict:
             # USER: Modify this if you want to keep them for some reason.
@@ -118,9 +128,11 @@ class DatasetMapper:
                     anno.pop("keypoints", None)
 
             # USER: Implement additional transformations if you have other types of data
-            annos = [self._transform_annotation(anno, transforms, image_shape)
-                     for anno in dataset_dict.pop("annotations")
-                     if anno.get("iscrowd", 0) == 0]
+            annos = [
+                self._transform_annotation(anno, transforms, image_shape)
+                for anno in dataset_dict.pop("annotations")
+                if anno.get("iscrowd", 0) == 0
+            ]
             if self.rotated_boxes_on and len(annos):
                 instances = utils.annotations_to_instances_rotated(annos, image_shape)
 
@@ -138,28 +150,28 @@ class DatasetMapper:
                     instances.gt_boxes = instances.gt_masks.get_bounding_boxes()
 
             # Adding the multi-label annotations
-            if self.orientation_on and len(annos) and 'orientation' in annos[0]:
+            if self.orientation_on and len(annos) and "orientation" in annos[0]:
                 instances.gt_orientation = self._build_gt_orientation(annos)
 
             # Adding the word-length
-            if len(annos) and 'word_length' in annos[0]:
-                word_lengths = [anno.get('word_length', 0) for anno in annos]
+            if len(annos) and "word_length" in annos[0]:
+                word_lengths = [anno.get("word_length", 0) for anno in annos]
                 instances.gt_word_lengths = torch.tensor(word_lengths)
 
             if self.load_gt_text:
-                text_list = [x['text'] for x in annos]
+                text_list = [x["text"] for x in annos]
                 text_tensor = self.converter.encode(text_list=text_list)
                 instances.gt_text_labels = text_tensor
 
-            if 'id' in annos[0]:
-                anno_id_list = [x['id'] for x in annos]
+            if "id" in annos[0]:
+                anno_id_list = [x["id"] for x in annos]
                 instances.anno_ids = torch.tensor(anno_id_list, dtype=torch.long)
 
-            dataset_dict['instances'] = utils.filter_empty_instances(instances)
+            dataset_dict["instances"] = utils.filter_empty_instances(instances)
         return dataset_dict
 
     def _read_and_verify_image(self, dataset_dict):
-        if self.img_format == 'GREY':
+        if self.img_format == "GREY":
             image = utils.read_image(dataset_dict["file_name"], format="RGB")
             image = rgb2grey(image, three_channels=True)
         else:
@@ -171,7 +183,8 @@ class DatasetMapper:
     def _load_seg_image(seg_image_path, transforms):
         seg_gt = utils.read_image(seg_image_path, "L").squeeze(2)
         seg_gt = transforms.apply_segmentation(
-            seg_gt)  # Todo: verify that apply seg is implemented, cardinal rotation, etc.
+            seg_gt
+        )  # Todo: verify that apply seg is implemented, cardinal rotation, etc.
         seg_gt = torch.as_tensor(seg_gt.astype("long"))
         return seg_gt
 
@@ -179,16 +192,18 @@ class DatasetMapper:
     def _build_gt_orientation(annos):
         gt_orientation = torch.zeros(len(annos))
         for i, anno in enumerate(annos):
-            gt_orientation[i] = int(np.round(anno['orientation'] / 90) % 4)
+            gt_orientation[i] = int(np.round(anno["orientation"] / 90) % 4)
         return gt_orientation
 
     def _build_gt_script(self, annos):
         gt_script = torch.zeros(len(annos))
         for i, anno in enumerate(annos):
             try:
-                gt_script[i] = self.script_names.index(anno['script'])
+                gt_script[i] = self.script_names.index(anno["script"])
             except ValueError as e:
-                raise ValueError(f'{e}: Script {anno["script"]} was not found in script names - ill defined script')
+                raise ValueError(
+                    f'{e}: Script {anno["script"]} was not found in script names - ill defined script'
+                )
         return gt_script
 
     def _transform_annotation(self, anno, transforms, image_shape):
@@ -203,9 +218,9 @@ class DatasetMapper:
         # First we update the regular way for a detectron2 annotation
 
         # If we deal with rotated boxes we only transform the rotated box
-        if anno['bbox_mode'] == BoxMode.XYWHA_ABS:
-            rotated_box = np.array(anno['bbox']).reshape(1, 5)
-            anno['bbox'] = transforms.apply_rotated_box(rotated_box)[0]
+        if anno["bbox_mode"] == BoxMode.XYWHA_ABS:
+            rotated_box = np.array(anno["bbox"]).reshape(1, 5)
+            anno["bbox"] = transforms.apply_rotated_box(rotated_box)[0]
             if self.mask_on and "segmentation" in anno:
                 # each instance contains 1 or more polygons
                 segm = anno["segmentation"]
@@ -229,19 +244,23 @@ class DatasetMapper:
                     )
         else:
             anno = utils.transform_instance_annotations(
-                anno, transforms, image_shape, keypoint_hflip_indices=self.keypoint_hflip_indices
+                anno,
+                transforms,
+                image_shape,
+                keypoint_hflip_indices=self.keypoint_hflip_indices,
             )
 
         # Updating the angle, if a rotation transform is found
-        angle = anno.get('angle')
+        angle = anno.get("angle")
         angle = angle if angle else 0.0
         for tfm in transforms.transforms:
             if isinstance(tfm, T.RotationTransform):
                 angle += tfm.angle
             break
         # Updating the orientation value
-        anno['orientation'] = int((90 * np.round(angle / 90)) % 360 if angle else 0)
+        anno["orientation"] = int((90 * np.round(angle / 90)) % 360 if angle else 0)
         return anno
+
 
 def _clone_dict(d):
     return {k: v for k, v in d.items()}

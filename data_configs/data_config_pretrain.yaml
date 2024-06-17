@@ -1,8 +1,7 @@
-ROOT: /data
+ROOT: ./glass-text-spotting/VinText/vintext
 
 DATASETS:
-  - SynthText_coco
-  - totaltext_train_coco
+  - train_images
 
 VAL_DATASETS:
-  - totaltext_test_coco
+  - val_image
