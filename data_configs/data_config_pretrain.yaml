@@ -1,4 +1,4 @@
-ROOT: ./glass-text-spotting/VinText/vintext
+ROOT: ./VinText/vintext
 
 DATASETS:
   - train_images
